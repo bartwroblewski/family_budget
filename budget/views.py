@@ -26,52 +26,28 @@ class RegisterUser(generics.CreateAPIView):
   permission_classes = [permissions.AllowAny]
   serializer_class = RegisterUserSerializer
 
-class BudgetList(APIView):
+class BudgetList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BudgetSerializer
 
-    def get(self, request, format=None):
-        entries = Budget.objects.filter(user=request.user)
-        serializer = BudgetSerializer(entries, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Budget.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-    def post(self, request, format=None):
-        serializer = BudgetSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class PaymentList(APIView):
+class PaymentList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, format=None):
-        entries = Payment.objects.all()
-        serializer = PaymentSerializer(entries, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = PaymentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
     
 class BudgetShareList(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BudgetShareSerializer
+    queryset = BudgetShare.objects.all()
 
-    def get(self, request, format=None):
-        entries = BudgetShare.objects.all()
-        serializer = BudgetShareSerializer(entries, many=True)
-        return Response(serializer.data) 
-
-    def post(self, request, format=None):
-        # TODO: maybe add validation here (or in models? serializers?) to check
-        # if budget being shared is in user's possesion
-        serializer = BudgetShareSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # TODO: maybe add validation here (or in models? serializers?) to check
+    # if budget being shared is in user's possesion
 
 # TODO better class name and better url path (users/id/budgets?)
 class UserBudgets(APIView):
