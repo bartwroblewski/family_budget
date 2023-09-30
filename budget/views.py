@@ -6,8 +6,13 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import BudgetEntrySerializer, RegisterUserSerializer, UserSerializer
-from .models import BudgetEntry
+from .serializers import (
+    BudgetSerializer,
+    PaymentSerializer,
+    RegisterUserSerializer,
+    UserSerializer,
+)
+from .models import Budget, Payment
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -16,18 +21,33 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser]
 
 class RegisterUserAPIView(generics.CreateAPIView):
-  permission_classes = (permissions.AllowAny,)
+  permission_classes = [permissions.AllowAny]
   serializer_class = RegisterUserSerializer
 
-class BudgetEntryList(APIView):
+class BudgetList(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        entries = BudgetEntry.objects.all()
-        serializer = BudgetEntrySerializer(entries, many=True)
+        entries = Budget.objects.all()
+        serializer = BudgetSerializer(entries, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = BudgetEntrySerializer(data=request.data)
+        serializer = BudgetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=self.request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PaymentList(APIView):
+
+    def get(self, request, format=None):
+        entries = Payment.objects.all()
+        serializer = PaymentSerializer(entries, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PaymentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

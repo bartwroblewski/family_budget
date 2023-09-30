@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import BudgetEntry
+from .models import Budget, Payment
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -33,7 +33,13 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     user.save()
     return user
 
-class BudgetEntrySerializer(serializers.ModelSerializer):
+class BudgetSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BudgetEntry
+        model = Budget
+        fields = '__all__'
+        read_only_fields = ("user",)
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
         fields = '__all__'
