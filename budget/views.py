@@ -20,7 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
-class RegisterUserAPIView(generics.CreateAPIView):
+class RegisterUser(generics.CreateAPIView):
   permission_classes = [permissions.AllowAny]
   serializer_class = RegisterUserSerializer
 
@@ -28,7 +28,7 @@ class BudgetList(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        entries = Budget.objects.all()
+        entries = Budget.objects.filter(user=request.user)
         serializer = BudgetSerializer(entries, many=True)
         return Response(serializer.data)
 
