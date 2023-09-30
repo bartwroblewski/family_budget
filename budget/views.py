@@ -39,9 +39,20 @@ class BudgetList(generics.ListCreateAPIView):
 class PaymentList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = PaymentSerializer
-    queryset = Payment.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['category']
+
+    def get_queryset(self):
+        # TODO: payment_set.all() instead?
+        user_budgets = Budget.objects.filter(user=self.request.user)
+        return Payment.objects.filter(budget__in=user_budgets)
+    
+    def perform_create(self, serializer):
+        budget = serializer.validated_data['budget']
+        user_budgets = Budget.objects.filter(user=self.request.user)
+        # TODO raise error if trying to modify other user budget
+        if budget in user_budgets:
+            serializer.save()
     
 class BudgetShareList(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -59,5 +70,6 @@ class UserBudgets(APIView):
         budgets = get_user_budgets(request.user)        
         return Response({
             'budgets': budgets, 
+            # TODO:shared budgets should rather be a separate endpoint
             'shared_budgets': get_budgets_shared_with_user(request.user),
         }) 
