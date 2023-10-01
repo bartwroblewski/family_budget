@@ -61,6 +61,12 @@ class BudgetShareList(generics.ListCreateAPIView):
         if budget.user != self.request.user:
             raise exceptions.PermissionDenied(
                 "You cannot share budgets you don't own")
+        
+        shared_with = serializer.validated_data['shared_with']
+        if shared_with == budget.user:
+            raise exceptions.PermissionDenied(
+                "You cannot share budget with yourself")
+        
         serializer.save(shared_by=self.request.user)
 
 # TODO better class name and better url path (users/id/budgets?)
