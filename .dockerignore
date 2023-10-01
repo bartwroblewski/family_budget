@@ -1,0 +1,6 @@
+.venv
+.git
+.gitignore
+.vscode
+db.sqlite3
+__pycache__

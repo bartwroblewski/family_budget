@@ -1,0 +1,9 @@
+services:
+  family_budget:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
