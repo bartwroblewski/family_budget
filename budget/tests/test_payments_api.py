@@ -47,7 +47,7 @@ class PaymentsTestCase(APITestCase):
         response = self.client.post(self.url, data=payment, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Payment.objects.count(), 1)
-        self.assertEqual(Payment.objects.first().budget.pk, budget.pk)
+        self.assertEqual(Payment.objects.first().budget, budget)
 
     def test_user_can_add_multiple_payments_to_budget(self): 
         budget = Budget.objects.create(user=self.user)
@@ -68,8 +68,8 @@ class PaymentsTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         self.assertEqual(Payment.objects.count(), 2)
-        self.assertEqual(Payment.objects.first().budget.pk, budget.pk)
-        self.assertEqual(Payment.objects.all()[1].budget.pk, budget.pk)
+        self.assertEqual(Payment.objects.first().budget, budget)
+        self.assertEqual(Payment.objects.all()[1].budget, budget)
 
     def test_positive_payment_amount_gets_tagged_as_income(self): 
         budget = Budget.objects.create(user=self.user)
