@@ -18,6 +18,7 @@ class Payment(models.Model):
     category = models.CharField(max_length=100)
 
 class BudgetShare(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
     shared_by = models.ForeignKey(
         User, 
         on_delete=models.CASCADE,

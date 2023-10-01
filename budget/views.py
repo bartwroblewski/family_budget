@@ -29,7 +29,8 @@ class BudgetList(generics.ListCreateAPIView):
     serializer_class = BudgetSerializer
 
     def get_queryset(self):
-        return Budget.objects.filter(user=self.request.user)
+        return Budget.objects.filter(user=self.request.user).order_by(
+            'created_at')
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -42,7 +43,8 @@ class PaymentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user_budgets = Budget.objects.filter(user=self.request.user)
-        return Payment.objects.filter(budget__in=user_budgets)
+        return Payment.objects.filter(budget__in=user_budgets).order_by(
+            'created_at')
     
     def perform_create(self, serializer):
         budget = serializer.validated_data['budget']
@@ -54,7 +56,7 @@ class PaymentList(generics.ListCreateAPIView):
 class BudgetShareList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BudgetShareSerializer
-    queryset = BudgetShare.objects.all()
+    queryset = BudgetShare.objects.all().order_by('created_at')
 
     def perform_create(self, serializer):
         budget = serializer.validated_data['budget']
