@@ -5,7 +5,7 @@ from django.db import models
 
 def validate_non_zero(amount: float):
     if amount == 0:
-        raise ValidationError('Budget amount cannot be 0.')
+        raise ValidationError('Payment amount cannot be 0.')
     
 class Budget(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
