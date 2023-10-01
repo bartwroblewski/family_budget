@@ -1,10 +1,8 @@
-FROM python:3.11.5-slim-bullseye
+FROM python:3.11.5-slim-bullseye as base
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-ENV DJANGO_SETTINGS_MODULE=family_budget.settings.development
 
 WORKDIR /code
 
@@ -19,4 +17,13 @@ COPY . .
 RUN python manage.py makemigrations
 RUN python manage.py migrate --run-syncdb
 
+FROM base as dev
+ENV DJANGO_SETTINGS_MODULE=family_budget.settings.development
 ENTRYPOINT ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+FROM base as prod
+ENV DJANGO_SETTINGS_MODULE=family_budget.settings.production
+RUN python manage.py collectstatic --no-input
+RUN pip install gunicorn
+ENTRYPOINT ["gunicorn", "family_budget.wsgi:application", "--bind", "0.0.0.0:8000"]
+
