@@ -1,12 +1,10 @@
 from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
-from rest_framework import permissions
-from rest_framework import viewsets
+from rest_framework import exceptions, generics, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .controllers import get_user_budgets, get_budgets_shared_with_user
+from .controllers import get_budgets_shared_with_user, get_user_budgets
 from .serializers import (
     BudgetSerializer,
     BudgetShareSerializer,
@@ -43,16 +41,16 @@ class PaymentList(generics.ListCreateAPIView):
     filterset_fields = ['category']
 
     def get_queryset(self):
-        # TODO: payment_set.all() instead?
         user_budgets = Budget.objects.filter(user=self.request.user)
         return Payment.objects.filter(budget__in=user_budgets)
     
     def perform_create(self, serializer):
-        budget = serializer.validated_data['budget']
         user_budgets = Budget.objects.filter(user=self.request.user)
-        # TODO raise error if trying to modify other user budget
-        if budget in user_budgets:
-            serializer.save()
+        budget = serializer.validated_data['budget']
+        if budget not in user_budgets:
+            raise exceptions.PermissionDenied(
+                "You cannot add payments to budgets you don't own")
+        serializer.save()
     
 class BudgetShareList(APIView):
     permission_classes = [permissions.IsAuthenticated]
