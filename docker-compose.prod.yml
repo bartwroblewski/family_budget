@@ -1,0 +1,25 @@
+services:
+  family_budget:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: always
+    volumes:
+      - static_volume:/code/collected_static
+    env_file:
+      - ./.env
+    ports:
+      - 8000:8000
+    
+  nginx:
+    build: ./nginx
+    restart: always
+    ports:
+      - ${NGINX_PORT}:80
+    volumes:
+      - static_volume:/code/collected_static
+    depends_on:
+      - family_budget
+
+volumes:
+  static_volume:
