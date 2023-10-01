@@ -45,20 +45,23 @@ class PaymentList(generics.ListCreateAPIView):
         return Payment.objects.filter(budget__in=user_budgets)
     
     def perform_create(self, serializer):
-        user_budgets = Budget.objects.filter(user=self.request.user)
         budget = serializer.validated_data['budget']
-        if budget not in user_budgets:
+        if budget.user != self.request.user:
             raise exceptions.PermissionDenied(
                 "You cannot add payments to budgets you don't own")
         serializer.save()
     
-class BudgetShareList(APIView):
+class BudgetShareList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BudgetShareSerializer
     queryset = BudgetShare.objects.all()
 
-    # TODO: maybe add validation here (or in models? serializers?) to check
-    # if budget being shared is in user's possesion
+    def perform_create(self, serializer):
+        budget = serializer.validated_data['budget']
+        if budget.user != self.request.user:
+            raise exceptions.PermissionDenied(
+                "You cannot share budgets you don't own")
+        serializer.save(shared_by=self.request.user)
 
 # TODO better class name and better url path (users/id/budgets?)
 class UserBudgets(APIView):

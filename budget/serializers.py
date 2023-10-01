@@ -48,3 +48,4 @@ class BudgetShareSerializer(serializers.ModelSerializer):
     class Meta:
         model = BudgetShare
         fields = '__all__'
+        read_only_fields = ("shared_by",)
