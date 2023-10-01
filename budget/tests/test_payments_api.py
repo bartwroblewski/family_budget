@@ -1,20 +1,13 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 
 from budget.models import Budget, Payment
+from .utils import WithLoggedInUserApiTestCase
 
-class PaymentsTestCase(APITestCase):
-    def get_user(self, username, email, password):
-        user_data = {'username': username, 'email': email, 'password': password}
-        self.client.post(reverse('register'), user_data, format='json')
-        self.client.login(username=username, password=password)
-        return User.objects.first()
 
-    def setUp(self):
-        self.user = self.get_user('user1', 'user1@gmail.com', '123jgj@#jg55%$')
-        self.url = reverse('payments')
+class PaymentsTestCase(WithLoggedInUserApiTestCase):
+    url = reverse('payments')
 
     def test_user_cannot_add_payment_to_non_existent_budget(self):
         payment = {

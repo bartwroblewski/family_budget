@@ -1,20 +1,13 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 
 from budget.models import Budget, BudgetShare
+from .utils import WithLoggedInUserApiTestCase
 
-class BudgetSharesTestCase(APITestCase):
-    def get_user(self, username, email, password):
-        user_data = {'username': username, 'email': email, 'password': password}
-        self.client.post(reverse('register'), user_data, format='json')
-        self.client.login(username=username, password=password)
-        return User.objects.first()
 
-    def setUp(self):
-        self.user = self.get_user('user1', 'user1@gmail.com', '123jgj@#jg55%$')
-        self.url = reverse('budget-shares')
+class BudgetSharesTestCase(WithLoggedInUserApiTestCase):
+    url = reverse('budget-shares')
 
     def test_user_cannot_share_budget_he_does_not_own(self):
         other_user = User.objects.create(
@@ -88,7 +81,7 @@ class BudgetSharesTestCase(APITestCase):
         other_user = User.objects.create(
             username='other_user', email='other_user@gmail.com')
         budget = Budget.objects.create(user=self.user)
-        
+
         share1 = {
             "shared_with": other_user.pk,
             "budget": budget.pk,
