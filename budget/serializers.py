@@ -40,9 +40,14 @@ class BudgetSerializer(serializers.ModelSerializer):
         read_only_fields = ("user",)
 
 class PaymentSerializer(serializers.ModelSerializer):
+    is_income = serializers.SerializerMethodField()
+
     class Meta:
         model = Payment
         fields = '__all__'
+
+    def get_is_income(self, obj):
+       return obj.amount > 0
 
 class BudgetShareSerializer(serializers.ModelSerializer):
     class Meta:
