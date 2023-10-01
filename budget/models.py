@@ -15,7 +15,7 @@ class Payment(models.Model):
     budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField(validators=[validate_non_zero])
-    category = models.CharField(max_length=100)
+    category = models.CharField(max_length=100, blank=True)
 
 class BudgetShare(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
