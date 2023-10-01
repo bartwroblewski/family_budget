@@ -1,10 +1,7 @@
 from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, generics, permissions, viewsets
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from .controllers import get_budgets_shared_with_user, get_user_budgets
 from .serializers import (
     BudgetSerializer,
     BudgetShareSerializer,
@@ -70,15 +67,3 @@ class BudgetShareList(generics.ListCreateAPIView):
                 "You cannot share budget with yourself")
         
         serializer.save(shared_by=self.request.user)
-
-# TODO better class name and better url path (users/id/budgets?)
-class UserBudgets(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, format=None):
-        budgets = get_user_budgets(request.user)        
-        return Response({
-            'budgets': budgets, 
-            # TODO:shared budgets should rather be a separate endpoint
-            'shared_budgets': get_budgets_shared_with_user(request.user),
-        }) 
