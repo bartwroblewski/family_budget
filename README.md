@@ -36,5 +36,5 @@ After running dev or prod `docker-compose` as described above:
 * Navigate to `localhost:8000/register` and register another user
 * Navigate to `localhost:8000/api/budget-shares` and share (POST, still logged in as the first user) the newly created budget with the other user
 * Log in as the second user
-* You should see shared budgets and/or payments under `localhost:8000/api/budgets` and `localhost:8000/api/payments` respectively
+* You should see budgets and payments (including shared ones) under `localhost:8000/api/budgets` and `localhost:8000/api/payments` respectively
 
