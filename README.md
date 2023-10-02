@@ -27,4 +27,14 @@ After running dev or prod `docker-compose` as described above:
 * Enter the container with `docker exec -it yourcontainerid sh`
 * Run `python manage.py test` inside the container
 
+## Example usage
+
+* Run development environment as described above
+* Navigate to `localhost:8000/register` and register a user. Log in as the newly registered user (button in the top-right corner)
+* Navigate to `localhost:8000/api/budgets` and create (POST) a budget
+* Navigate to `localhost:8000/api/payments` and create(POST) a payment in the above budget
+* Navigate to `localhost:8000/register` and register another user
+* Navigate to `localhost:8000/api/budget-shares` and share (POST, still logged in as the first user) the newly created budget with the other user
+* Log in as the second user
+* You should see shared budgets and/or payments under `localhost:8000/api/budgets` and `localhost:8000/api/payments` respectively
 
