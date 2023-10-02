@@ -32,10 +32,15 @@ class BudgetsTestCase(WithLoggedInUserApiTestCase):
             email='other_user@gmail.com',
             password='gg$$%@gg454',
         )
-        budget = Budget.objects.create(user=self.user)
+        shared_budget = Budget.objects.create(user=self.user)
+
+        # some unshared budgets
+        Budget.objects.create(user=self.user)
+        Budget.objects.create(user=other_user)
+
         share = {
             "shared_with": other_user.pk,
-            "budget": budget.pk,
+            "budget": shared_budget.pk,
         }
         self.client.post(reverse('budget-shares'), data=share, format='json')
         self.client.logout()
@@ -43,5 +48,7 @@ class BudgetsTestCase(WithLoggedInUserApiTestCase):
         self.client.force_login(user=other_user)
 
         response = self.client.get(reverse('budgets'))
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['id'], budget.pk)
+        self.assertEqual(Budget.objects.count(), 3)
+        self.assertEqual(response.data['count'], 2)
+        budget_ids = [budget['id'] for budget in response.data['results']]
+        self.assertIn(shared_budget.pk, budget_ids)
