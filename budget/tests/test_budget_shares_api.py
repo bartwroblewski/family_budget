@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
-from django.contrib.auth.models import User
 
 from budget.models import Budget, BudgetShare
 from .utils import WithLoggedInUserApiTestCase
@@ -76,7 +76,6 @@ class BudgetSharesTestCase(WithLoggedInUserApiTestCase):
         self.assertEqual(budget_shares[1].shared_with, other_user2)
         self.assertEqual(budget_shares[1].budget, budget)
 
-
     def test_user_can_share_same_budget_to_same_user_more_than_once(self):
         other_user = User.objects.create(
             username='other_user', email='other_user@gmail.com')
@@ -105,7 +104,4 @@ class BudgetSharesTestCase(WithLoggedInUserApiTestCase):
         self.assertEqual(budget_shares[1].shared_with, other_user)
         self.assertEqual(budget_shares[1].budget, budget)
 
-    
-
-
-   
+       

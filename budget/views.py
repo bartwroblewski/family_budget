@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, generics, permissions, viewsets
 
+from .controllers import get_user_budgets
 from .serializers import (
     BudgetSerializer,
     BudgetShareSerializer,
@@ -26,7 +27,7 @@ class BudgetList(generics.ListCreateAPIView):
     serializer_class = BudgetSerializer
 
     def get_queryset(self):
-        return Budget.objects.filter(user=self.request.user).order_by(
+        return get_user_budgets(self.request.user).order_by(
             'created_at')
     
     def perform_create(self, serializer):
@@ -39,9 +40,10 @@ class PaymentList(generics.ListCreateAPIView):
     filterset_fields = ['category']
 
     def get_queryset(self):
-        user_budgets = Budget.objects.filter(user=self.request.user)
-        return Payment.objects.filter(budget__in=user_budgets).order_by(
-            'created_at')
+        user_budgets = get_user_budgets(self.request.user)
+        return Payment.objects \
+            .filter(budget__in=user_budgets) \
+            .order_by('created_at')
     
     def perform_create(self, serializer):
         budget = serializer.validated_data['budget']
@@ -53,8 +55,11 @@ class PaymentList(generics.ListCreateAPIView):
 class BudgetShareList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BudgetShareSerializer
-    queryset = BudgetShare.objects.all().order_by('created_at')
 
+    def get_queryset(self):
+        return BudgetShare.objects.filter(
+            shared_by=self.request.user).order_by('created_at')
+    
     def perform_create(self, serializer):
         budget = serializer.validated_data['budget']
         if budget.user != self.request.user:
