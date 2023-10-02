@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, generics, permissions, viewsets
 
-from .controllers import get_user_budgets
+from .controllers import get_user_budgets, get_user_payments
 from .serializers import (
     BudgetSerializer,
     BudgetShareSerializer,
@@ -40,10 +40,7 @@ class PaymentList(generics.ListCreateAPIView):
     filterset_fields = ['category']
 
     def get_queryset(self):
-        user_budgets = get_user_budgets(self.request.user)
-        return Payment.objects \
-            .filter(budget__in=user_budgets) \
-            .order_by('created_at')
+        return get_user_payments(self.request.user).order_by('created_at')
     
     def perform_create(self, serializer):
         budget = serializer.validated_data['budget']

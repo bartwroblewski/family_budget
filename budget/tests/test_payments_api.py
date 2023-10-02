@@ -100,25 +100,39 @@ class PaymentsTestCase(WithLoggedInUserApiTestCase):
             email='other_user@gmail.com',
             password='gg$$%@gg454',
         )
-        budget = Budget.objects.create(user=self.user)
-
-        payment = {
+        shared_budget = Budget.objects.create(user=self.user)
+        shared_payment = {
             "amount": 100.0,
             "category": "salary",
-            "budget": budget.pk,
+            "budget": shared_budget.pk,
         }
-        response = self.client.post(self.url, data=payment, format='json')
+        response = self.client.post(self.url, data=shared_payment, format='json')
 
         share = {
             "shared_with": other_user.pk,
-            "budget": budget.pk,
+            "budget": shared_budget.pk,
         }
         self.client.post(reverse('budget-shares'), data=share, format='json')
         self.client.logout()
 
+        unshared_budget1 = Budget.objects.create(user=self.user)
+        unshared_budget2 = Budget.objects.create(user=other_user)
+
+        Payment.objects.create(
+            budget=unshared_budget1,
+            amount=50.0,
+            category='gift',
+        )
+        Payment.objects.create(
+            budget=unshared_budget2,
+            amount=150.0,
+            category='gift',
+        )
+
         self.client.force_login(user=other_user)
 
         response = self.client.get(reverse('payments'))
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['amount'], payment['amount'])
-        self.assertEqual(response.data['results'][0]['category'], payment['category'])
+        self.assertEqual(Payment.objects.count(), 3)
+        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(response.data['results'][0]['amount'], shared_payment['amount'])
+        self.assertEqual(response.data['results'][0]['category'], shared_payment['category'])
