@@ -2,7 +2,7 @@
 
 ## Tech stack
 
-Django, Django Rest Framework, SQLite
+Django, Django Rest Framework, SQLite, Docker
 
 ## Running development environment
 
@@ -23,8 +23,8 @@ Django, Django Rest Framework, SQLite
 ## Running tests
 
 After running dev or prod `docker-compose` as described above:
-1. Determine your family budget app container ID with via `docker ps`
-2. Enter the container with `docker exec -it yourcontainerid sh`
-3. Run `python manage.py test` inside the container
+* Determine your family budget app container ID with via `docker ps`
+* Enter the container with `docker exec -it yourcontainerid sh`
+* Run `python manage.py test` inside the container
 
 
