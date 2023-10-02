@@ -1,5 +1,6 @@
 from .base import *
 
+SECRET_KEY = '123insecure'
 
 DEBUG = True
 

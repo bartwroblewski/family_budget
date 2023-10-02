@@ -16,7 +16,7 @@ services:
     build: ./nginx
     restart: always
     ports:
-      - ${NGINX_PORT}:80
+      - 80:80
     volumes:
       - static_volume:/code/collected_static
     depends_on:
