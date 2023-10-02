@@ -20,3 +20,11 @@ Django, Django Rest Framework, SQLite
 
 `docker-compose -f docker-compose.prod.yml up --build`
 
+## Running tests
+
+After running dev or prod `docker-compose` as described above:
+1. Determine your family budget app container ID with via `docker ps`
+2. Enter the container with `docker exec -it yourcontainerid sh`
+3. Run `python manage.py test` inside the container
+
+
