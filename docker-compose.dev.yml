@@ -6,7 +6,5 @@ services:
       target: dev
     volumes:
       - .:/code
-    env_file:
-      - ./.env
     ports:
       - 8000:8000
