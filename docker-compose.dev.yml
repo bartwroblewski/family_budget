@@ -6,5 +6,7 @@ services:
       target: dev
     volumes:
       - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=family_budget.settings.development
     ports:
       - 8000:8000

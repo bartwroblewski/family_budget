@@ -18,12 +18,10 @@ RUN python manage.py makemigrations
 RUN python manage.py migrate --run-syncdb
 
 FROM base as dev
-ENV DJANGO_SETTINGS_MODULE=family_budget.settings.development
 ENTRYPOINT ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 FROM base as prod
 RUN pip install gunicorn
-ENV DJANGO_SETTINGS_MODULE=family_budget.settings.production
 RUN python manage.py collectstatic --no-input
 ENTRYPOINT ["gunicorn", "family_budget.wsgi:application", "--bind", "0.0.0.0:8000"]
 

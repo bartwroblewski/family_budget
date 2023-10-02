@@ -9,6 +9,8 @@ services:
       - static_volume:/code/collected_static
     env_file:
       - ./.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=family_budget.settings.production
     ports:
       - 8000:8000
     
