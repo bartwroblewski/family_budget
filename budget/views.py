@@ -10,7 +10,7 @@ from .serializers import (
     RegisterUserSerializer,
     UserSerializer,
 )
-from .models import Budget, BudgetShare, Payment
+from .models import BudgetShare, Payment
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -5,7 +5,8 @@ from .base import *
 
 DEBUG = False
 
-# wilcard is used here just to allow running prod setup locally
+# Wildcard is used here just to allow running prod setup locally.
+# Populate with your real hosts.
 ALLOWED_HOSTS = ['*']
 
 STATIC_ROOT = os.path.join(
